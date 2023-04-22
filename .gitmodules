@@ -1,0 +1,3 @@
+[submodule "harth-ml-experiments"]
+	path = harth-ml-experiments
+	url = https://github.com/ntnu-ai-lab/harth-ml-experiments

@@ -7,13 +7,13 @@ import numpy as np
 import scipy as sp
 from scipy import stats
 from scipy import signal
+from numpy.lib.format import open_memmap
 
 train_windows = np.load("svm/train_windows.npy", mmap_mode='r')
 test_windows = np.load("svm/test_windows.npy", mmap_mode='r')
 
-# GENERATE TRAIN FEATURES
-
-train_features = []
+train_features = open_memmap('svm/train_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
+test_features = open_memmap('svm/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
 
 def corr_grav(x,y):
     corr = np.corrcoef(x,y)[0][1]
@@ -32,6 +32,7 @@ def freq_cent(fft_ampl, fft_freq):
         sums = np.where(sums, sums, 1.)  # Avoid dividing by zero
         return np.sum(fft_freq * fft_ampl) / sums
 
+# GENERATE TRAIN FEATURES
 for window in train_windows:
 
     window_features = []
@@ -151,16 +152,10 @@ for window in train_windows:
     window_features+=[np.sum(x**2) for x in train_fft]
 
     #print(len(window_features))
-    train_features.append(window_features)
+    train_features+=window_features
 
-# SAVE TRAIN FEATURES
-train_features = np.array(train_features,dtype=np.float32)
-np.save("svm/train_features.npy", train_features)
 
 # GENERATE TEST FEATURES
-
-test_features = []
-
 for window in test_windows:
 
     window_features = []
@@ -280,9 +275,9 @@ for window in test_windows:
     window_features+=[np.sum(x**2) for x in test_fft]
 
     #print(len(window_features))
-    test_features.append(window_features)
+    test_features+=window_features
 
 
-# SAVE TEST FEATURES
-test_features = np.array(test_features,dtype=np.float32)
-np.save("svm/test_features.npy", test_features)
+# SAVE FEATURES
+train_features.flush()
+test_features.flush()

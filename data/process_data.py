@@ -1,14 +1,12 @@
 import random
 import json
 
-import pandas as pd 
-import matplotlib.pyplot as plt 
+import pandas as pd
 import numpy as np
 import scipy as sp
 from numpy.lib.stride_tricks import sliding_window_view
 from numpy.lib.format import open_memmap
-
-import os
+from keras.utils.np_utils import to_categorical
 
 num_samples = 50
 
@@ -142,9 +140,9 @@ with open("work/class_weights.json", "w") as jsonfile:
 print("Shuffling dataset...")
 
 train_windows_shuffled = open_memmap('work/train_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, 50))
-train_labels_shuffled = open_memmap('work/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
+train_labels_shuffled = open_memmap('work/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,12))
 test_windows_shuffled = open_memmap('work/test_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, 50))
-test_labels_shuffled = open_memmap('work/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
+test_labels_shuffled = open_memmap('work/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,12))
 
 train_shuffle = np.arange(train_labels.size)
 test_shuffle = np.arange(test_labels.size)
@@ -158,14 +156,18 @@ for i in range(train_labels.size):
 for i in range(test_labels.size):
     test_windows_shuffled[i] = test_windows[test_shuffle[i]]
     test_labels_shuffled[i] = test_labels[test_shuffle[i]]
-    
+
+
+print("One-Hot encoding...")
+
+train_labels_shuffled[:] = np.array([to_categorical(train_labels_shuffled[i][0], num_classes=12) for i in range(len(train_labels_shuffled))], dtype=np.int32)
+test_labels_shuffled[:] = np.array([to_categorical(test_labels_shuffled[i][0], num_classes=12) for i in range(len(test_labels_shuffled))], dtype=np.int32)
+
+print("Flush...")
+
 train_windows_shuffled.flush()
 train_labels_shuffled.flush()
 test_windows_shuffled.flush()
 test_labels_shuffled.flush()
 
-os.remove('work/train_windows_tmp.npy')
-os.remove('work/train_labels_tmp.npy')
-os.remove('work/test_windows_tmp.npy')
-os.remove('work/test_labels_tmp.npy')
- 
+print("Preprocessing Complete!")

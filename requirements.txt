@@ -1,0 +1,5 @@
+tensorflow==2.11
+hls4ml==0.7.0rc1
+scipy
+seaborn
+pandas

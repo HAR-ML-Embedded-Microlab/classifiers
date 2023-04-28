@@ -179,6 +179,7 @@ for window in train_windows:
       break
 
 # GENERATE TEST FEATURES
+i=0
 for window in test_windows:
     window_features = []
 
@@ -293,6 +294,7 @@ for window in test_windows:
     
     
     test_features[i] = window_features
+    i+=1
 
 
 # SAVE FEATURES

@@ -158,10 +158,10 @@ for i in range(test_labels.size):
     test_labels_shuffled[i] = test_labels[test_shuffle[i]]
 
 
-print("One-Hot encoding...")
+# print("One-Hot encoding...")
 
-train_labels_shuffled[:] = np.array([to_categorical(train_labels_shuffled[i][0], num_classes=12) for i in range(len(train_labels_shuffled))], dtype=np.int32)
-test_labels_shuffled[:] = np.array([to_categorical(test_labels_shuffled[i][0], num_classes=12) for i in range(len(test_labels_shuffled))], dtype=np.int32)
+# train_labels_shuffled[:] = np.array([to_categorical(train_labels_shuffled[i][0], num_classes=12) for i in range(len(train_labels_shuffled))], dtype=np.int32)
+# test_labels_shuffled[:] = np.array([to_categorical(test_labels_shuffled[i][0], num_classes=12) for i in range(len(test_labels_shuffled))], dtype=np.int32)
 
 print("Flush...")
 

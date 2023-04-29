@@ -1,4 +1,5 @@
 from libsvm.svmutil import *
+import numpy as np
 
 train_features = np.load('work/train_features.npy', mmap_mode='r')
 train_labels = np.load('work/train_labels.npy', mmap_mode='r')

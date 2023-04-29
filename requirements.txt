@@ -1,5 +1,6 @@
 tensorflow==2.11
 hls4ml==0.7.0rc1
+libsvm-official
 scipy
 seaborn
 pandas

@@ -7,7 +7,7 @@ from numpy.lib.format import open_memmap
 train_windows = np.load("work/train_windows.npy", mmap_mode='r')
 test_windows = np.load("work/test_windows.npy", mmap_mode='r')
 
-train_features = open_memmap('work/window_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
+train_features = open_memmap('work/train_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
 test_features = open_memmap('work/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
 
 def corr_grav(x,y):

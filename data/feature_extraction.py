@@ -185,6 +185,7 @@ for window in train_windows:
 
 # GENERATE TEST FEATURES
 i=0
+i=0
 for window in test_windows:
     window_features = []
 

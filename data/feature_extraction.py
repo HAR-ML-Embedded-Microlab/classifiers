@@ -4,11 +4,13 @@ from scipy import stats
 from scipy import signal
 from numpy.lib.format import open_memmap
 
-train_windows = np.load("work/train_windows.npy", mmap_mode='r')
-test_windows = np.load("work/test_windows.npy", mmap_mode='r')
+train_windows = np.load("point-75-sec/train_windows.npy", mmap_mode='r')
+test_windows = np.load("point-75-sec/test_windows.npy", mmap_mode='r')
 
-train_features = open_memmap('work/window_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
-test_features = open_memmap('work/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
+train_features = open_memmap('point-75-sec/train_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
+test_features = open_memmap('point-75-sec/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
+
+fs = 38 # ~0.75s window size
 
 def corr_grav(x,y):
     corr = np.corrcoef(x,y)[0][1]
@@ -53,11 +55,11 @@ for window in train_windows:
     #  Filtering
     # create the LP filter
     # 1Hz 4th order LP Butterworth filter
-    b, a  = signal.butter(4, Wn=1, fs=50, btype='lowpass')
+    b, a  = signal.butter(4, Wn=1, fs=fs, btype='lowpass')
 
     # create the HP filter
     # 1Hz 4th order HP Butterworth filter
-    d, c = signal.butter(4, Wn=1, fs=50, btype='highpass')
+    d, c = signal.butter(4, Wn=1, fs=fs, btype='highpass')
 
     window_grav = signal.filtfilt(b, a, window_withMag, axis=1)
     window_mot = signal.filtfilt(d, c, window_withMag, axis=1)
@@ -156,29 +158,33 @@ for window in train_windows:
     train_features[i] = window_features
 
     i += 1
+    print(f"train window: {i}/{len(train_windows)}, feature len: {len(window_features)}")
     
-    if i == 1:
-      print(f"window: {i}/{len(train_windows)}, feature len: {len(window_features)}") 
-      print(f"window features: ")
-      print(window_features)
-      print(f"train features: ")
-      print(train_features)
-    if i == 100:
-      print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-      print(train_features)
-    if i == 500:
-      print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-    if i == 1000:
-      print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-    if i == 10000:
-      print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-    if i == 50000:
-      print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-    if i == 100000:
-      print(f"window: {i}/{len(train_windows)}, feature len: {len(window_features)}")
-      break
+    # if i == 1:
+    #   print(f"window: {i}/{len(train_windows)}, feature len: {len(window_features)}") 
+    #   print(f"window features: ")
+    #   print(window_features)
+    #   print(f"train features: ")
+    #   print(train_features)
+    # if i == 100:
+    #   print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    #   print(train_features)
+    # if i == 500:
+    #   print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    # if i == 1000:
+    #   print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    # if i == 10000:
+    #   print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    # if i == 50000:
+    #   print(f"\nwindow: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    # if i == 100000:
+    #   print(f"window: {i}/{len(train_windows)}, feature len: {len(window_features)}")
+    #   #break
+    # if i == 1000000:
+    #   print(f"window: {i}/{len(train_windows)}, feature len: {len(window_features)}")
 
 # GENERATE TEST FEATURES
+i=0
 for window in test_windows:
     window_features = []
 
@@ -197,11 +203,11 @@ for window in test_windows:
     #  Filtering
     # create the LP filter
     # 1Hz 4th order LP Butterworth filter
-    b, a  = signal.butter(4, Wn=1, fs=50, btype='lowpass')
+    b, a  = signal.butter(4, Wn=1, fs=fs, btype='lowpass')
 
     # create the HP filter
     # 1Hz 4th order HP Butterworth filter
-    d, c = signal.butter(4, Wn=1, fs=50, btype='highpass')
+    d, c = signal.butter(4, Wn=1, fs=fs, btype='highpass')
 
     window_grav = signal.filtfilt(b, a, window_withMag, axis=1)
     window_mot = signal.filtfilt(d, c, window_withMag, axis=1)
@@ -291,9 +297,16 @@ for window in test_windows:
     # Total Signal Power
     window_features+=[np.sum(x**2) for x in window_fft]
     
-    
     test_features[i] = window_features
+    
+    i+=1
+    print(f"test window: {i}/{len(test_windows)}, feature len: {len(window_features)}")
 
+
+    
+# Replace NaN values with 0
+train_features[np.isnan(train_features)] = 0
+test_features[np.isnan(test_features)] = 0
 
 # SAVE FEATURES
 train_features.flush()

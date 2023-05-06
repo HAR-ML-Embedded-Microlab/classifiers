@@ -140,9 +140,9 @@ with open("point-75-sec/class_weights.json", "w") as jsonfile:
 print("Shuffling dataset...")
 
 train_windows_shuffled = open_memmap('point-75-sec/train_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, num_samples))
-train_labels_shuffled = open_memmap('point-75-sec/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,12))
+train_labels_shuffled = open_memmap('point-75-sec/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
 test_windows_shuffled = open_memmap('point-75-sec/test_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, num_samples))
-test_labels_shuffled = open_memmap('point-75-sec/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,12))
+test_labels_shuffled = open_memmap('point-75-sec/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
 
 train_shuffle = np.arange(train_labels.size)
 test_shuffle = np.arange(test_labels.size)
@@ -156,12 +156,6 @@ for i in range(train_labels.size):
 for i in range(test_labels.size):
     test_windows_shuffled[i] = test_windows[test_shuffle[i]]
     test_labels_shuffled[i] = test_labels[test_shuffle[i]]
-
-
-# print("One-Hot encoding...")
-
-# train_labels_shuffled[:] = np.array([to_categorical(train_labels_shuffled[i][0], num_classes=12) for i in range(len(train_labels_shuffled))], dtype=np.int32)
-# test_labels_shuffled[:] = np.array([to_categorical(test_labels_shuffled[i][0], num_classes=12) for i in range(len(test_labels_shuffled))], dtype=np.int32)
 
 print("Flush...")
 

@@ -4,3 +4,5 @@ libsvm-official
 scipy
 seaborn
 pandas
+nvidia-cudnn-cu11
+nvidia-cuda-runtime-cu11

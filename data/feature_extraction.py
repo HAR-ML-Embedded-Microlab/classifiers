@@ -4,13 +4,13 @@ from scipy import stats
 from scipy import signal
 from numpy.lib.format import open_memmap
 
-train_windows = np.load("point-75-sec/train_windows.npy", mmap_mode='r')
-test_windows = np.load("point-75-sec/test_windows.npy", mmap_mode='r')
+train_windows = np.load("point-25-sec/train_windows.npy", mmap_mode='r')
+test_windows = np.load("point-25-sec/test_windows.npy", mmap_mode='r')
 
-train_features = open_memmap('point-75-sec/train_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
-test_features = open_memmap('point-75-sec/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
+train_features = open_memmap('point-25-sec/train_features.npy', mode='w+', dtype=np.float32, shape=(train_windows.shape[0], 161))
+test_features = open_memmap('point-25-sec/test_features.npy', mode='w+', dtype=np.float32, shape=(test_windows.shape[0], 161))
 
-fs = 38 # ~0.75s window size
+fs = 12 # ~0.25s window size
 
 def corr_grav(x,y):
     corr = np.corrcoef(x,y)[0][1]
@@ -61,8 +61,8 @@ for window in train_windows:
     # 1Hz 4th order HP Butterworth filter
     d, c = signal.butter(4, Wn=1, fs=fs, btype='highpass')
 
-    window_grav = signal.filtfilt(b, a, window_withMag, axis=1)
-    window_mot = signal.filtfilt(d, c, window_withMag, axis=1)
+    window_grav = signal.filtfilt(b, a, window_withMag, axis=1, padlen=10)
+    window_mot = signal.filtfilt(d, c, window_withMag, axis=1, padlen=10)
 
     #print(len(window_features))
     # kept these as .append instead of += bc when I tested it, it threw an error when including the means later on
@@ -185,7 +185,6 @@ for window in train_windows:
 
 # GENERATE TEST FEATURES
 i=0
-i=0
 for window in test_windows:
     window_features = []
 
@@ -210,8 +209,8 @@ for window in test_windows:
     # 1Hz 4th order HP Butterworth filter
     d, c = signal.butter(4, Wn=1, fs=fs, btype='highpass')
 
-    window_grav = signal.filtfilt(b, a, window_withMag, axis=1)
-    window_mot = signal.filtfilt(d, c, window_withMag, axis=1)
+    window_grav = signal.filtfilt(b, a, window_withMag, axis=1, padlen=10)
+    window_mot = signal.filtfilt(d, c, window_withMag, axis=1, padlen=10)
 
     #print(len(window_features))
     # kept these as .append instead of += bc when I tested it, it threw an error when including the means later on

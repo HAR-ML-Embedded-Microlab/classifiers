@@ -8,7 +8,7 @@ from numpy.lib.stride_tricks import sliding_window_view
 from numpy.lib.format import open_memmap
 from keras.utils.np_utils import to_categorical
 
-num_samples = 38 # ~0.75s
+num_samples = 50 # 1s
 
 harth_filenames = [
     './harth-ml-experiments/harth/S006.csv',
@@ -84,10 +84,10 @@ for i in range(len(permanent_shuffling)):
     
 print("Processing windows...")
 
-train_windows = open_memmap('point-75-sec/train_windows_tmp.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, num_samples))
-train_labels = open_memmap('point-75-sec/train_labels_tmp.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
-test_windows = open_memmap('point-75-sec/test_windows_tmp.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, num_samples))
-test_labels = open_memmap('point-75-sec/test_labels_tmp.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
+train_windows = open_memmap('1-sec/train_windows_tmp.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, num_samples))
+train_labels = open_memmap('1-sec/train_labels_tmp.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
+test_windows = open_memmap('1-sec/test_windows_tmp.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, num_samples))
+test_labels = open_memmap('1-sec/test_labels_tmp.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
 
 num_windows_train_processed = 0
 num_windows_test_processed = 0
@@ -134,15 +134,15 @@ num_classes = 12
 weights = train_labels.size/(num_classes*np.bincount(train_labels))
 class_weights = {i:weights[i] for i in range(num_classes)}
 
-with open("point-75-sec/class_weights.json", "w") as jsonfile:
+with open("1-sec/class_weights.json", "w") as jsonfile:
     json.dump(class_weights, jsonfile, indent=4)   
     
 print("Shuffling dataset...")
 
-train_windows_shuffled = open_memmap('point-75-sec/train_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, num_samples))
-train_labels_shuffled = open_memmap('point-75-sec/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
-test_windows_shuffled = open_memmap('point-75-sec/test_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, num_samples))
-test_labels_shuffled = open_memmap('point-75-sec/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
+train_windows_shuffled = open_memmap('1-sec/train_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_train, 6, num_samples))
+train_labels_shuffled = open_memmap('1-sec/train_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_train,))
+test_windows_shuffled = open_memmap('1-sec/test_windows.npy', mode='w+', dtype=np.float32, shape=(num_windows_test, 6, num_samples))
+test_labels_shuffled = open_memmap('1-sec/test_labels.npy', mode='w+', dtype=np.int32, shape=(num_windows_test,))
 
 train_shuffle = np.arange(train_labels.size)
 test_shuffle = np.arange(test_labels.size)
